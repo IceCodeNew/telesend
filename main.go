@@ -1,33 +1,18 @@
 package main
 
 import (
-	"crypto/aes"
 	"fmt"
 
-	"github.com/IceCodeNew/telesend/pkg/crypto"
+	"github.com/IceCodeNew/telesend/internal/app/config"
 )
 
-func main() {
-	goCrypt()
+func init() {
+	if err := config.ReadConfig(); err != nil {
+		panic(err)
+	}
 }
 
-func goCrypt() {
-	asciiIV, err := crypto.RandAsciiBytes(aes.BlockSize)
-	if err != nil {
-		panic(err)
-	}
-	asciiKey, err := crypto.RandAsciiBytes(crypto.KeySizeAES256)
-	if err != nil {
-		panic(err)
-	}
-
-	plaintext := []byte(`{"body": "test", "sound": "birdsong"}`)
-	enc, err := crypto.EncryptWithAESCBC(asciiIV, asciiKey, plaintext)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("Encrypted text: %s\n", enc)
-	fmt.Printf("IV: %s\n", string(asciiIV))
-	fmt.Printf("Key: %s\n", string(asciiKey))
+func main() {
+	fmt.Printf("db_path: %s\n", config.TSConfig.DbPath)
+	fmt.Printf("verbose: %v\n", config.TSConfig.Verbose)
 }

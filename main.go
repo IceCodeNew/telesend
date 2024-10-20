@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/IceCodeNew/telesend/internal/app/config"
+	"github.com/IceCodeNew/telesend/internal/app/lotusdb"
 	bark "github.com/IceCodeNew/telesend/pkg/notificator"
 )
 
@@ -32,6 +33,14 @@ func init() {
 }
 
 func main() {
+	db, err := lotusdb.InitDB(config.TSConfig.DbPath)
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		_ = db.Close()
+	}()
+
 	if err := testRcv.Send(testMsg, config.TSConfig.Verbose); err != nil {
 		panic(err)
 	}

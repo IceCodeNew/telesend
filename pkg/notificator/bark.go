@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/IceCodeNew/telesend/internal/app/aead"
 	"github.com/IceCodeNew/telesend/pkg/crypto"
 	"github.com/IceCodeNew/telesend/pkg/httpHelper"
 	"github.com/samber/lo"
@@ -17,7 +18,7 @@ type Sender struct {
 	// Required; telegram user ID
 	Creator int64
 	// Required
-	DeviceKey string
+	DeviceKey []byte
 	// Required; generate by function UniqueID of pkg/uniqueID
 	ID string
 	// Required
@@ -49,7 +50,7 @@ type Message struct {
 }
 
 func (sender *Sender) Send(msg *Message, verbose bool) error {
-	url, err := url.JoinPath(sender.Server, sender.DeviceKey)
+	url, err := url.JoinPath(sender.Server, string(sender.DeviceKey))
 	if err != nil {
 		return err
 	}
@@ -100,5 +101,50 @@ func (sender *Sender) queryFactor(msg *Message) (string, error) {
 	params := url.Values{}
 	params.Add("ciphertext", ciphertext)
 	params.Add("iv", string(iv))
+
+	iv, key = nil, nil
 	return params.Encode(), nil
+}
+
+func (sender *Sender) SelfEncrypt() {
+	deviceKey, iv, key :=
+		sender.DeviceKey,
+		sender.PreSharedSHA256IV,
+		sender.PreSharedSHA256Key
+
+	_,
+		sender.DeviceKey,
+		sender.PreSharedSHA256IV,
+		sender.PreSharedSHA256Key =
+		0,
+		aead.EncAscon128a(deviceKey),
+		aead.EncAscon128a(iv),
+		aead.EncAscon128a(key)
+
+	deviceKey, iv, key = nil, nil, nil
+}
+
+func (sender *Sender) SelfDecrypt() error {
+	deviceKey, err := aead.DecAscon128a(sender.DeviceKey)
+	if err != nil {
+		return err
+	}
+	iv, err := aead.DecAscon128a(sender.PreSharedSHA256IV)
+	if err != nil {
+		return err
+	}
+	key, err := aead.DecAscon128a(sender.PreSharedSHA256Key)
+	if err != nil {
+		return err
+	}
+
+	_,
+		sender.DeviceKey,
+		sender.PreSharedSHA256IV,
+		sender.PreSharedSHA256Key =
+		0,
+		deviceKey, iv, key
+
+	deviceKey, iv, key = nil, nil, nil
+	return nil
 }

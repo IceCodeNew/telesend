@@ -38,7 +38,7 @@ func DeviceKeyHandler(c tele.Context) error {
 		return fmt.Errorf("ERROR: [User Input] DeviceKey is empty")
 	}
 
-	newBarkSender.DeviceKey = deviceKey
+	newBarkSender.DeviceKey = []byte(deviceKey)
 
 	nextStep++
 

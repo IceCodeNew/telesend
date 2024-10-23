@@ -1,4 +1,4 @@
-package notificator
+package bark
 
 import (
 	"encoding/json"
@@ -14,42 +14,7 @@ import (
 	"github.com/samber/lo"
 )
 
-type Sender struct {
-	// Required; telegram user ID
-	Creator int64
-	// Required
-	DeviceKey []byte
-	// Required; generate by function UniqueID of pkg/uniqueID
-	ID string
-	// Required
-	PreSharedSHA256IV []byte
-	// Required
-	PreSharedSHA256Key []byte
-	// Required; default: "https://api.day.app/"
-	Server string
-}
-
-type Message struct {
-	// The number displayed next to App icon
-	// Number greater than 9999 will be displayed as 9999+
-	Badge int `json:"badge,omitempty"`
-	// The content of the notification
-	Body string `json:"body,omitempty"`
-	// The value to be copied
-	Copy string `json:"copy,omitempty"`
-	// The group of the notification
-	Group string `json:"group,omitempty"`
-	// An url to the icon, available only on iOS 15 or later
-	Icon string `json:"icon,omitempty"`
-	// Value from https://github.com/Finb/Bark/tree/master/Sounds
-	Sound string `json:"sound,omitempty"`
-	// Notification title, optionally set by the sender
-	Title string `json:"title,omitempty"`
-	// Url that will jump when click notification
-	URL string `json:"url,omitempty"`
-}
-
-func (sender *Sender) Send(msg *Message, verbose bool) error {
+func (sender *BarkSender) Send(msg *BarkMessage, verbose bool) error {
 	url, err := url.JoinPath(sender.Server, string(sender.DeviceKey))
 	if err != nil {
 		return err
@@ -86,7 +51,7 @@ func (sender *Sender) Send(msg *Message, verbose bool) error {
 	return nil
 }
 
-func (sender *Sender) queryFactor(msg *Message) (string, error) {
+func (sender *BarkSender) queryFactor(msg *BarkMessage) (string, error) {
 	plaintext, err := json.Marshal(msg)
 	if err != nil {
 		return "", err
@@ -106,7 +71,7 @@ func (sender *Sender) queryFactor(msg *Message) (string, error) {
 	return params.Encode(), nil
 }
 
-func (sender *Sender) SelfEncrypt() {
+func (sender *BarkSender) SelfEncrypt() {
 	deviceKey, iv, key :=
 		sender.DeviceKey,
 		sender.PreSharedSHA256IV,
@@ -124,7 +89,7 @@ func (sender *Sender) SelfEncrypt() {
 	deviceKey, iv, key = nil, nil, nil
 }
 
-func (sender *Sender) SelfDecrypt() error {
+func (sender *BarkSender) SelfDecrypt() error {
 	deviceKey, err := aead.DecAscon128a(sender.DeviceKey)
 	if err != nil {
 		return err

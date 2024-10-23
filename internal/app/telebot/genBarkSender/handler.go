@@ -5,8 +5,9 @@ import (
 	"fmt"
 
 	"github.com/IceCodeNew/telesend/internal/app/config"
+	"github.com/IceCodeNew/telesend/internal/app/db"
+	"github.com/IceCodeNew/telesend/pkg/bark"
 	"github.com/IceCodeNew/telesend/pkg/crypto"
-	bark "github.com/IceCodeNew/telesend/pkg/notificator"
 	"github.com/IceCodeNew/telesend/pkg/uniqueID"
 	tele "gopkg.in/telebot.v4"
 )
@@ -14,11 +15,11 @@ import (
 var (
 	nextStep = 1
 
-	newBarkSender = &bark.Sender{
+	newBarkSender = &bark.BarkSender{
 		Server: "https://api.day.app/",
 	}
 
-	verifyMsg = &bark.Message{
+	verifyMsg = &bark.BarkMessage{
 		Group: "telesend",
 		Sound: "telegraph.caf",
 		Title: "Forwarded from Telegram",
@@ -67,20 +68,22 @@ func ServerAddrInputHandler(c tele.Context) error {
 
 	newBarkSender.Server = serverAddr
 
-	var err error
-	newBarkSender.PreSharedSHA256Key, err = crypto.RandAsciiBytes(crypto.KeySizeAES256)
+	key, err := crypto.RandAsciiBytes(crypto.KeySizeAES256)
 	if err != nil {
 		newBarkSender, verifyMsg = nil, nil
 		return fmt.Errorf("ERROR: [Internal] Failed to generate AES key")
 	}
-	newBarkSender.PreSharedSHA256IV, err = crypto.RandAsciiBytes(aes.BlockSize)
+	iv, err := crypto.RandAsciiBytes(aes.BlockSize)
 	if err != nil {
 		newBarkSender, verifyMsg = nil, nil
 		return fmt.Errorf("ERROR: [Internal] Failed to generate AES IV")
 	}
+	newBarkSender.PreSharedSHA256Key,
+		newBarkSender.PreSharedSHA256IV = key, iv
 
 	nextStep++
-	quotedKey, quotedIv := fmt.Sprintf("Key: `%s`\n", string(newBarkSender.PreSharedSHA256Key)),
+	quotedKey, quotedIv :=
+		fmt.Sprintf("Key: `%s`\n", string(newBarkSender.PreSharedSHA256Key)),
 		fmt.Sprintf("Iv: `%s`\n", string(newBarkSender.PreSharedSHA256IV))
 
 	return c.Reply(`
@@ -124,10 +127,10 @@ The verification message should be as follows:
 		// newBarkSender, verifyMsg = nil, nil
 
 		// no details in error message returned to users
-		_str := "ERROR: [Internal] Failed to send verify message"
-		_ = c.Reply(_str)
+		reply := "ERROR: [Internal] Failed to send verify message"
+		_ = c.Reply(reply)
 
-		return fmt.Errorf("%s: %v", _str, err)
+		return fmt.Errorf("%s: %v", reply, err)
 	}
 
 	nextStep++
@@ -147,16 +150,25 @@ func VerifyBarkSenderHandler(c tele.Context) error {
 		return fmt.Errorf("ERROR: [Internal] Steps before %d did not complete successfully", currStep)
 	}
 
-	payload, senderID := c.Message().Payload, newBarkSender.ID
-	fmt.Printf("\n\npayload: %s\n\n", payload)
-	fmt.Printf("\n\nsenderID: %s\n\n", senderID)
-	if payload != senderID {
+	if c.Message().Payload != newBarkSender.ID {
 		// allowing retries
 		// newBarkSender, verifyMsg = nil, nil
 
 		return c.Reply("ERROR: [User Input] Verification failed")
 	}
-	// TODO: save the newBarkSender to database
+
+	newBarkSender.SelfEncrypt()
+	if err := db.StoreSender(newBarkSender); err != nil {
+		// retry is not possible since the sender info was already encrypted
+		newBarkSender, verifyMsg = nil, nil
+		reply := "ERROR: [Internal] Failed to save new Bark Sender, please try again"
+		_ = c.Reply(reply)
+
+		return fmt.Errorf(`%s
+DEBUG: original error was:
+%v`,
+			reply, err)
+	}
 
 	nextStep++
 

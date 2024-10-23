@@ -79,7 +79,9 @@ func (sender *Sender) Send(msg *Message, verbose bool) error {
 	if err != nil {
 		return fmt.Errorf("FATAL: failed to send message after 3 attempts, the last error was:\n %v", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 	return nil
 }
 

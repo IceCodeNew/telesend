@@ -21,7 +21,9 @@ func HttpReqHelper(req *http.Request, verbose bool) (*http.Response, error) {
 		return resp, nil
 	}
 	// The http Client and Transport guarantee that Body is always non-nil, even on responses without a body or responses with a zero-length body.
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		errMsg := fmt.Sprintf(`

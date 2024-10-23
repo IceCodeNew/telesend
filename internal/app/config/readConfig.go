@@ -43,7 +43,9 @@ func (tsConfig *TelesendConfig) sanityCheck() error {
 	if err != nil {
 		return fmt.Errorf("FATAL: the bot token failed check after 3 attempts, the last error was:\n %v", err)
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	return fsHelper.CreateDir(tsConfig.DBPath)
 }

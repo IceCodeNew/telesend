@@ -14,16 +14,16 @@ import (
 )
 
 type Sender struct {
-	// Required; telegram chat id
+	// Required; telegram user ID
 	Creator int64
 	// Required
 	DeviceKey string
 	// Required; generate by function UniqueID of pkg/uniqueID
 	ID string
 	// Required
-	PreSharedSHA256IV string
+	PreSharedSHA256IV []byte
 	// Required
-	PreSharedSHA256Key string
+	PreSharedSHA256Key []byte
 	// Required; default: "https://api.day.app/"
 	Server string
 }
@@ -90,13 +90,13 @@ func (sender *Sender) queryFactor(msg *Message) (string, error) {
 	}
 
 	iv, key := sender.PreSharedSHA256IV, sender.PreSharedSHA256Key
-	ciphertext, err := crypto.EncryptWithAESCBC([]byte(iv), []byte(key), plaintext)
+	ciphertext, err := crypto.EncryptWithAESCBC(iv, key, plaintext)
 	if err != nil {
 		return "", err
 	}
 
 	params := url.Values{}
 	params.Add("ciphertext", ciphertext)
-	params.Add("iv", iv)
+	params.Add("iv", string(iv))
 	return params.Encode(), nil
 }

@@ -8,6 +8,7 @@ require (
 	github.com/knadh/koanf/v2 v2.1.1
 	github.com/samber/lo v1.47.0
 	github.com/stretchr/testify v1.9.0
+	gopkg.in/telebot.v4 v4.0.0-beta.4
 )
 
 require (

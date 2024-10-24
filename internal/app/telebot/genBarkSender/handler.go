@@ -13,8 +13,6 @@ import (
 )
 
 var (
-	nextStep = 1
-
 	newBarkSender = &bark.BarkSender{
 		Server: "https://api.day.app/",
 	}
@@ -108,7 +106,9 @@ func SendVerifyMsgHandler(c tele.Context) error {
 	if nextStep != currStep ||
 		newBarkSender == nil ||
 		verifyMsg == nil {
-		return fmt.Errorf("ERROR: [Internal] Steps before %d did not complete successfully", currStep)
+		reply := previousStepsNotComplete(currStep)
+		_ = c.Reply(reply)
+		return fmt.Errorf(reply)
 	}
 
 	senderID := uniqueID.UniqueID()
@@ -147,7 +147,9 @@ func VerifyBarkSenderHandler(c tele.Context) error {
 	if nextStep != currStep ||
 		newBarkSender == nil ||
 		verifyMsg == nil {
-		return fmt.Errorf("ERROR: [Internal] Steps before %d did not complete successfully", currStep)
+		reply := previousStepsNotComplete(currStep)
+		_ = c.Reply(reply)
+		return fmt.Errorf(reply)
 	}
 
 	if c.Message().Payload != newBarkSender.ID {

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/IceCodeNew/telesend/internal/app/aead"
 	"github.com/IceCodeNew/telesend/internal/app/config"
 	"github.com/IceCodeNew/telesend/internal/app/db"
 	"github.com/IceCodeNew/telesend/internal/app/telebot"
@@ -15,11 +14,6 @@ func init() {
 }
 
 func main() {
-	// init aead cipher
-	if err := aead.InitCipher(); err != nil {
-		panic(err)
-	}
-
 	// init db
 	if err := db.CreateTable(&bark.BarkSender{}); err != nil {
 		panic(err)

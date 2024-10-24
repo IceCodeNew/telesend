@@ -1,17 +1,12 @@
 package config
 
 import (
-	"fmt"
-	"net/http"
 	"os"
-	"time"
 
 	"github.com/IceCodeNew/telesend/pkg/fsHelper"
-	"github.com/IceCodeNew/telesend/pkg/httpHelper"
 	"github.com/knadh/koanf/parsers/json"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/v2"
-	"github.com/samber/lo"
 )
 
 var (
@@ -27,25 +22,25 @@ type TelesendConfig struct {
 }
 
 func (tsConfig *TelesendConfig) sanityCheck() error {
-	req, err := http.NewRequest(http.MethodGet,
-		fmt.Sprintf("https://api.telegram.org/bot%s/getMe", tsConfig.BotToken), nil)
-	var resp *http.Response
+	// req, err := http.NewRequest(http.MethodGet,
+	// 	fmt.Sprintf("https://api.telegram.org/bot%s/getMe", tsConfig.BotToken), nil)
+	// var resp *http.Response
 
-	_, _, err = lo.AttemptWhileWithDelay(3, time.Second*10,
-		func(int, time.Duration) (error, bool) {
-			// BE AWARE as the resp is NOT GUARANTEED to be non-nil
-			resp, err = httpHelper.HttpReqHelper(req, tsConfig.Verbose)
-			if err != nil {
-				return err, true
-			}
-			return nil, false
-		})
-	if err != nil {
-		return fmt.Errorf("FATAL: the bot token failed check after 3 attempts, the last error was:\n %v", err)
-	}
-	defer func() {
-		_ = resp.Body.Close()
-	}()
+	// _, _, err = lo.AttemptWhileWithDelay(3, time.Second*10,
+	// 	func(int, time.Duration) (error, bool) {
+	// 		// BE AWARE as the resp is NOT GUARANTEED to be non-nil
+	// 		resp, err = httpHelper.HttpReqHelper(req, tsConfig.Verbose)
+	// 		if err != nil {
+	// 			return err, true
+	// 		}
+	// 		return nil, false
+	// 	})
+	// if err != nil {
+	// 	return fmt.Errorf("FATAL: the bot token failed check after 3 attempts, the last error was:\n %v", err)
+	// }
+	// defer func() {
+	// 	_ = resp.Body.Close()
+	// }()
 
 	return fsHelper.CreateDir(tsConfig.DBPath)
 }

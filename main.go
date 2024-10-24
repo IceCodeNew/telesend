@@ -5,6 +5,7 @@ import (
 	"github.com/IceCodeNew/telesend/internal/app/db"
 	"github.com/IceCodeNew/telesend/internal/app/telebot"
 	"github.com/IceCodeNew/telesend/pkg/bark"
+	_ "go.uber.org/automaxprocs"
 )
 
 func init() {
@@ -21,17 +22,5 @@ func main() {
 	defer db.Close()
 
 	// init telebot
-	telebot, err := telebot.NewBot()
-	if err != nil {
-		panic(err)
-	}
-	defer func() {
-		_, err = telebot.Close()
-		if err != nil {
-			panic(err)
-		}
-	}()
-	defer telebot.Stop()
-
-	telebot.Start()
+	telebot.StartBot()
 }

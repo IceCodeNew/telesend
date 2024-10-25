@@ -44,14 +44,14 @@ func CreateTable[T any](t *T) error {
 	return nil
 }
 
-func StoreSender[T any](sender *T) error {
+func SetElem[T any](elem *T) error {
 	if engine == nil {
 		return engineNotInitErr
 	}
 
 	_, err := engine.Transaction(
 		func(session *xorm.Session) (interface{}, error) {
-			if _, err := session.Insert(sender); err != nil {
+			if _, err := session.Insert(elem); err != nil {
 				return nil, err
 			}
 			return nil, nil
@@ -62,15 +62,17 @@ func StoreSender[T any](sender *T) error {
 	return nil
 }
 
-func GetSender[T any](id string, sender *T) error {
+func GetElemByID[T any](id string) (*T, error) {
 	if engine == nil {
-		return engineNotInitErr
+		return nil, engineNotInitErr
 	}
 
-	if found, err := engine.ID(id).Get(sender); err != nil {
-		return err
+	var elem *T
+	if found, err := engine.ID(id).Get(elem); err != nil {
+		return nil, err
 	} else if !found {
-		return fmt.Errorf("sender %s not found", id)
+		elem = nil
+		return nil, fmt.Errorf("ERROR: [Internal] Element %s: not found", id)
 	}
-	return nil
+	return elem, nil
 }

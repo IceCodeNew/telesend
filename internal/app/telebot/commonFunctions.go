@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/IceCodeNew/telesend/internal/app/db"
+	"github.com/IceCodeNew/telesend/pkg/bark"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
 )
@@ -48,4 +50,31 @@ func previousStepsNotComplete(currStep int, steps []string) string {
 
 	reply := _reply.String()
 	return reply
+}
+
+func setSender(sender *bark.BarkSender) error {
+	if err := sender.SelfEncrypt(); err != nil {
+		return fmt.Errorf(
+			"ERROR: [Internal] Failed to self-encrypt the new Bark Sender, the original error was:\n%v\n",
+			err,
+		)
+	}
+
+	return db.SetElem(sender)
+}
+
+func getSender(id string) (*bark.BarkSender, error) {
+	sender, err := db.GetElemByID[bark.BarkSender](id)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"ERROR: [Internal] Failed to get Bark Sender from DB, the original error was:\n%v\n",
+			err,
+		)
+	}
+
+	err = sender.SelfDecrypt()
+	if err != nil {
+		sender = nil
+	}
+	return sender, err
 }

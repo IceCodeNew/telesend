@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/IceCodeNew/telesend/internal/app/config"
-	"github.com/IceCodeNew/telesend/internal/app/db"
 	"github.com/IceCodeNew/telesend/pkg/bark"
 	"github.com/IceCodeNew/telesend/pkg/crypto"
 	"github.com/IceCodeNew/telesend/pkg/uniqueID"
@@ -178,14 +177,8 @@ func (bsg *barkSenderGenerator) verifyBarkSenderHandler(bot *gotgbot.Bot, ctx *e
 		return replyNoDetailInternalErr(bot, ctx, nil, reply)
 	}
 
-	if err := bsg.newBarkSender.SelfEncrypt(); err != nil {
-		// retry is not possible since the sender info might have been partially encrypted
-		reply := "ERROR: [Internal] Failed to self-encrypt the new Bark Sender, please start over and give another try"
-		return replyNoDetailInternalErr(bot, ctx, err, reply)
-	}
-
-	if err := db.StoreSender(bsg.newBarkSender); err != nil {
-		// retry is not possible since the sender info was already encrypted
+	// retry is not possible since the sender info might have been partially/completely encrypted
+	if err := setSender(bsg.newBarkSender); err != nil {
 		reply := "ERROR: [Internal] Failed to store the new Bark Sender, please start over and give another try"
 		return replyNoDetailInternalErr(bot, ctx, err, reply)
 	}

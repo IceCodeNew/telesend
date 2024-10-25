@@ -1,7 +1,6 @@
 package telebot
 
 import (
-	"crypto/aes"
 	"fmt"
 
 	"github.com/IceCodeNew/telesend/internal/app/config"
@@ -65,7 +64,7 @@ func (bsg *barkSenderGenerator) serverAddrInputHandler(bot *gotgbot.Bot, ctx *ex
 		reply := "ERROR: [Internal] Failed to generate AES key"
 		return replyNoDetailInternalErr(bot, ctx, nil, reply)
 	}
-	iv, err := crypto.RandAsciiBytes(aes.BlockSize)
+	iv, err := crypto.RandAsciiBytes(crypto.KeySizeAES128)
 	if err != nil {
 		reply := "ERROR: [Internal] Failed to generate AES IV"
 		return replyNoDetailInternalErr(bot, ctx, nil, reply)

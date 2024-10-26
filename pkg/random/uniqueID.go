@@ -45,7 +45,7 @@ func UniqueID() string {
 
 	for i, randomBits := 0, randomInt32(); i < 3; i++ {
 		// Takes only the lowest 10 bits of the randomNum.
-		randomPos := randomBits & 0b1111111111
+		randomPos := randomBits & Mask_1023
 		randomBits >>= 10
 
 		result.WriteString(WordList[randomPos])

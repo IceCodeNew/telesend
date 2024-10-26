@@ -1,6 +1,9 @@
 package random
 
-const maxWordLength = 9
+const (
+	maxWordLength = 9
+	Mask_1023     = 0b1111111111
+)
 
 // origin: https://www.eff.org/files/2016/09/08/eff_short_wordlist_2_0.txt
 //

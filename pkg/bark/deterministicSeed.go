@@ -63,9 +63,9 @@ func deterministicSeed(seed1, seed2 uint64) []byte {
 	seed := append(make([]byte, 0, seedLen), _strProduct...)
 
 	// make sure the _randomWordIndex is in the range of [0, 1023]
-	_randomWordIndex := int(product & _1023)
+	_randomWordIndex := int(product & random.Mask_1023)
 	for _padLen := seedLen - len(_strProduct); _padLen > 0; _randomWordIndex++ {
-		_randomWord := random.WordList[_randomWordIndex&_1023]
+		_randomWord := random.WordList[_randomWordIndex&random.Mask_1023]
 		_randomWordLen := min(len(_randomWord), _padLen)
 
 		seed = append(seed, _randomWord[:_randomWordLen]...)
@@ -88,5 +88,4 @@ func enlargeSeed(seed uint64) uint64 {
 const (
 	minimumSeed uint64 = 1<<20 - 1
 	seedLen            = 32
-	_1023              = 1<<10 - 1
 )

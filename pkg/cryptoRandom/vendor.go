@@ -9,9 +9,12 @@ import (
 // len(encodeStr) = 8+5+11+11+2+11+10+6 = 64.
 //
 // This allows (0 <= x <= 255) x % 64 to have an even distribution.
-const encodeStr = "ABCDEFGH" + "JKLMN" + "PQRSTUVWXYZ" +
-	"abcdefghijk" + "mn" + "pqrstuvwxyz" + "0123456789" +
-	"-_+=,."
+const (
+	encodeStr = "ABCDEFGH" + "JKLMN" + "PQRSTUVWXYZ" +
+		"abcdefghijk" + "mn" + "pqrstuvwxyz" + "0123456789" +
+		"-_+=,."
+	Mask_63 = uint8(len(encodeStr) - 1)
+)
 
 // A helper function create and fill a slice of length n with characters from the following string:
 //
@@ -26,8 +29,8 @@ func AsciiBytes(n int) ([]byte, error) {
 		return nil, err
 	}
 
-	for i, _lenEncodeStr := 0, uint8(len(encodeStr)); i < n; i++ {
-		randomPos := uint8(randomness[i]) % _lenEncodeStr
+	for i := range n {
+		randomPos := uint8(randomness[i]) & Mask_63
 		output[i] = encodeStr[randomPos]
 	}
 	randomness = nil

@@ -19,12 +19,12 @@ var (
 	ErrorPaddingNotAllTheSame = errors.New("bad PKCS#7 padding - not all the same")
 )
 
+// Modified by IceCodeNew
+
 // Pad buf using PKCS#7 to a multiple of n.
 //
 // Appends the padding to buf - make a copy of it first if you don't
 // want it modified.
-
-// Modified by IceCodeNew
 func Pad(blockLen int, buf []byte) []byte {
 	if blockLen <= 1 || blockLen >= 256 {
 		err := fmt.Errorf("invalid block size: %d", blockLen)

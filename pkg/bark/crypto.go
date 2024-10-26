@@ -38,20 +38,20 @@ func (sender *BarkSender) queryFactor(msg *BarkMessage) (string, error) {
 //
 // The encryption is merely meant to prevent the database to be scanned easily.
 func (sender *BarkSender) SelfEncrypt() error {
-	predictableKey, predictableNonce, err := sender.predictableKeyAndNonce()
+	deterministicKey, deterministicNonce, err := sender.deterministicKeyAndNonce()
 	if err != nil {
 		return err
 	}
 
-	deviceKey, err := aead.EncAscon128a(predictableKey, predictableNonce, sender.DeviceKey)
+	deviceKey, err := aead.EncAscon128a(deterministicKey, deterministicNonce, sender.DeviceKey)
 	if err != nil {
 		return err
 	}
-	iv, err := aead.EncAscon128a(predictableKey, predictableNonce, sender.PreSharedSHA256IV)
+	iv, err := aead.EncAscon128a(deterministicKey, deterministicNonce, sender.PreSharedSHA256IV)
 	if err != nil {
 		return err
 	}
-	key, err := aead.EncAscon128a(predictableKey, predictableNonce, sender.PreSharedSHA256Key)
+	key, err := aead.EncAscon128a(deterministicKey, deterministicNonce, sender.PreSharedSHA256Key)
 	if err != nil {
 		return err
 	}
@@ -72,20 +72,20 @@ func (sender *BarkSender) SelfEncrypt() error {
 //
 // The encryption is merely meant to prevent the database to be scanned easily.
 func (sender *BarkSender) SelfDecrypt() error {
-	predictableKey, predictableNonce, err := sender.predictableKeyAndNonce()
+	deterministicKey, deterministicNonce, err := sender.deterministicKeyAndNonce()
 	if err != nil {
 		return err
 	}
 
-	deviceKey, err := aead.DecAscon128a(predictableKey, predictableNonce, sender.DeviceKey)
+	deviceKey, err := aead.DecAscon128a(deterministicKey, deterministicNonce, sender.DeviceKey)
 	if err != nil {
 		return err
 	}
-	iv, err := aead.DecAscon128a(predictableKey, predictableNonce, sender.PreSharedSHA256IV)
+	iv, err := aead.DecAscon128a(deterministicKey, deterministicNonce, sender.PreSharedSHA256IV)
 	if err != nil {
 		return err
 	}
-	key, err := aead.DecAscon128a(predictableKey, predictableNonce, sender.PreSharedSHA256Key)
+	key, err := aead.DecAscon128a(deterministicKey, deterministicNonce, sender.PreSharedSHA256Key)
 	if err != nil {
 		return err
 	}
@@ -101,7 +101,7 @@ func (sender *BarkSender) SelfDecrypt() error {
 	return nil
 }
 
-func (sender *BarkSender) predictableKeyAndNonce() (key, nonce []byte, err error) {
+func (sender *BarkSender) deterministicKeyAndNonce() (key, nonce []byte, err error) {
 	_seed, _token, found := strings.Cut(config.TSConfig.BotToken, ":")
 	if !found {
 		return nil, nil, fmt.Errorf("ERROR: [Internal] Invalid bot token format")

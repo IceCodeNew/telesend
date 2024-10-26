@@ -12,6 +12,7 @@ require (
 	github.com/stretchr/testify v1.9.0
 	go.uber.org/automaxprocs v1.6.0
 	golang.org/x/crypto v0.28.0
+	lukechampine.com/frand v1.5.1
 	modernc.org/sqlite v1.33.1
 	xorm.io/xorm v1.3.9
 )

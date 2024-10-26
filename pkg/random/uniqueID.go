@@ -12,10 +12,10 @@ import (
 func randomNumWithTimeStamp() (roughTimeStamp int32, randomNum int32) {
 	randomNum = randomInt32()
 
-	// Takes the highest 10 bits of the randomNum as the sleep time (in milliseconds).
-	// So this function will sleep for around 1 second at most.
+	// Takes the lowest 4 bits of the randomNum as the sleep time (in milliseconds).
+	// So this function will sleep for 15 ms at most.
 	// Take this a precaution for the multi-threading cases.
-	randomSleepDuration := randomNum >> 22
+	randomSleepDuration := randomNum & 0b1111
 	time.Sleep(time.Duration(randomSleepDuration) * time.Millisecond)
 
 	// roughTimeStamp is masked by DecMask6Digit (524287),

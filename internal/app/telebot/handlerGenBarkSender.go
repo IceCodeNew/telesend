@@ -5,7 +5,7 @@ import (
 
 	"github.com/IceCodeNew/telesend/internal/app/config"
 	"github.com/IceCodeNew/telesend/pkg/bark"
-	"github.com/IceCodeNew/telesend/pkg/crypto"
+	"github.com/IceCodeNew/telesend/pkg/cryptoRandom"
 	"github.com/IceCodeNew/telesend/pkg/random"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
@@ -59,12 +59,12 @@ func (bsg *barkSenderGenerator) serverAddrInputHandler(bot *gotgbot.Bot, ctx *ex
 	// does not have to check whether the previous step successed or not
 	// no op
 
-	key, err := crypto.RandAsciiBytes(crypto.KeySizeAES256)
+	key, err := cryptoRandom.AsciiBytes(32)
 	if err != nil {
 		reply := "ERROR: [Internal] Failed to generate AES key"
 		return replyNoDetailInternalErr(bot, ctx, nil, reply)
 	}
-	iv, err := crypto.RandAsciiBytes(crypto.KeySizeAES128)
+	iv, err := cryptoRandom.AsciiBytes(16)
 	if err != nil {
 		reply := "ERROR: [Internal] Failed to generate AES IV"
 		return replyNoDetailInternalErr(bot, ctx, nil, reply)

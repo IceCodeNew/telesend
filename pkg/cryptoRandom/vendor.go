@@ -1,4 +1,4 @@
-package crypto
+package cryptoRandom
 
 import (
 	"crypto/rand"
@@ -16,7 +16,7 @@ const encodeStr = "ABCDEFGH" + "JKLMN" + "PQRSTUVWXYZ" +
 // A helper function create and fill a slice of length n with characters from the following string:
 //
 // "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz0123456789-_+=,."
-func RandAsciiBytes(n int) ([]byte, error) {
+func AsciiBytes(n int) ([]byte, error) {
 	// We will take n bytes, one byte for each character of output.
 	output, randomness := make([]byte, n), make([]byte, n)
 

@@ -1,4 +1,4 @@
-package uniqueID
+package random
 
 const maxWordLength = 9
 
@@ -6,7 +6,7 @@ const maxWordLength = 9
 //
 // With some words removed to reduce the size of the list to 1024,
 // and make sure no words are longer than 9 characters.
-var wordList = []string{
+var WordList = []string{
 	"aardvark",
 	"abdomen",
 	"abiding",

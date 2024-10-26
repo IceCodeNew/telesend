@@ -1,14 +1,16 @@
-package uniqueID
+package random
 
 import (
 	"fmt"
-	"math/rand/v2"
+	"math"
 	"strings"
 	"time"
+
+	"lukechampine.com/frand"
 )
 
 func randomNumWithTimeStamp() (roughTimeStamp int32, randomNum int32) {
-	randomNum = rand.Int32()
+	randomNum = randomInt32()
 
 	// Takes the highest 10 bits of the randomNum as the sleep time (in milliseconds).
 	// So this function will sleep for around 1 second at most.
@@ -41,15 +43,20 @@ func UniqueID() string {
 	result.WriteString(fmt.Sprintf("%06d", roughTimeStamp))
 	result.WriteByte(sep)
 
-	for i, randomBits := 0, rand.Int32(); i < 3; i++ {
+	for i, randomBits := 0, randomInt32(); i < 3; i++ {
 		// Takes only the lowest 10 bits of the randomNum.
 		randomPos := randomBits & 0b1111111111
 		randomBits >>= 10
 
-		result.WriteString(wordList[randomPos])
+		result.WriteString(WordList[randomPos])
 		result.WriteByte(sep)
 	}
 
 	result.WriteString(fmt.Sprintf("%05d", randomNum))
 	return result.String()
+}
+
+// will not work on 32-bit systems
+func randomInt32() int32 {
+	return int32(frand.Intn(math.MaxInt32 + 1))
 }

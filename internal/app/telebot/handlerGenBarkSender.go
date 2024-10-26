@@ -6,7 +6,7 @@ import (
 	"github.com/IceCodeNew/telesend/internal/app/config"
 	"github.com/IceCodeNew/telesend/pkg/bark"
 	"github.com/IceCodeNew/telesend/pkg/crypto"
-	"github.com/IceCodeNew/telesend/pkg/uniqueID"
+	"github.com/IceCodeNew/telesend/pkg/random"
 	"github.com/PaulSonOfLars/gotgbot/v2"
 	"github.com/PaulSonOfLars/gotgbot/v2/ext"
 )
@@ -120,7 +120,7 @@ func (bsg *barkSenderGenerator) sendVerifyMsgHandler(bot *gotgbot.Bot, ctx *ext.
 		return replyNoDetailInternalErr(bot, ctx, nil, reply)
 	}
 
-	senderID := uniqueID.UniqueID()
+	senderID := random.UniqueID()
 	bsg.newBarkSender.ID, bsg.verifyMsg.Title = senderID, "Verify Bark Sender"
 
 	bsg.verifyMsg.Copy = "/verify_bark_sender " + senderID

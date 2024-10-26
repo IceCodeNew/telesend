@@ -1,4 +1,4 @@
-package uniqueID
+package random
 
 const (
 	DecMask1Digit = 0b111

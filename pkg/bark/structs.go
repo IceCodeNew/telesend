@@ -5,7 +5,7 @@ import "time"
 type BarkSender struct {
 	// Required; telegram user ID
 	Creator int64 `xorm:"notnull"`
-	// Required; generate by function UniqueID of pkg/uniqueID
+	// Required; generate by function UniqueID of pkg/random
 	ID string `xorm:"pk notnull unique"`
 	// Required; default: "https://api.day.app/"
 	Server string `xorm:"notnull"`

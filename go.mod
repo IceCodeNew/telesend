@@ -13,7 +13,7 @@ require (
 	go.uber.org/automaxprocs v1.6.0
 	golang.org/x/crypto v0.28.0
 	lukechampine.com/frand v1.5.1
-	modernc.org/sqlite v1.33.1
+	modernc.org/sqlite v1.34.5
 	xorm.io/xorm v1.3.9
 )
 
@@ -25,7 +25,6 @@ require (
 	github.com/goccy/go-json v0.10.3 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.6.0 // indirect
-	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/knadh/koanf/maps v0.1.1 // indirect
 	github.com/kr/pretty v0.3.0 // indirect
@@ -44,11 +43,8 @@ require (
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	modernc.org/gc/v3 v3.0.0-20241004144649-1aea3fae8852 // indirect
 	modernc.org/libc v1.61.0 // indirect
 	modernc.org/mathutil v1.6.0 // indirect
 	modernc.org/memory v1.8.0 // indirect
-	modernc.org/strutil v1.2.0 // indirect
-	modernc.org/token v1.1.0 // indirect
 	xorm.io/builder v0.3.13 // indirect
 )

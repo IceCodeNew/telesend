@@ -3,7 +3,7 @@ module github.com/IceCodeNew/telesend
 go 1.23.2
 
 require (
-	github.com/PaulSonOfLars/gotgbot/v2 v2.0.0-rc.29
+	github.com/PaulSonOfLars/gotgbot/v2 v2.0.0-rc.31
 	github.com/cloudflare/circl v1.5.0
 	github.com/knadh/koanf/parsers/json v0.1.0
 	github.com/knadh/koanf/providers/file v1.1.2
